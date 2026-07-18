@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:security:report": "node -e \"fs.mkdirSync('reports', { recursive: true })\" && eslint . --format json --output-file reports/eslint-security-report.json",
+    "lint:security:sarif": "node -e \"fs.mkdirSync('reports', { recursive: true })\" && eslint . --format @microsoft/eslint-formatter-sarif --output-file reports/eslint-security.sarif",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@microsoft/eslint-formatter-sarif": "^3.1.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
