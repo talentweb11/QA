@@ -34,3 +34,4 @@ Thumbs.db
 backend/uploads/
 .vercel
 .env*
+!.env.example
