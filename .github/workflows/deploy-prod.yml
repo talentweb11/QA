@@ -1,0 +1,55 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend to EC2
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/student23/ICT2216-Secure-Software-Dev
+
+            git pull origin main
+
+            # Rewrite .env from GitHub Secrets on every deploy
+            cat > .env << 'EOF'
+            FLASK_ENV=production
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+            SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }}
+            SUPABASE_BUCKET=${{ secrets.SUPABASE_BUCKET }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            MAIL_SERVER=${{ secrets.MAIL_SERVER }}
+            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
+            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+            MAX_UPLOAD_SIZE_MB=10
+            ALLOWED_EXTENSIONS=pdf,csv
+            SESSION_LIFETIME_MINUTES=30
+            MFA_ISSUER=PersonalFinanceTracker
+            EOF
+
+            chmod 600 .env
+
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+              up --build -d --remove-orphans
+

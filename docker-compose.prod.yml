@@ -1,0 +1,16 @@
+services:
+  db:
+    profiles: [local]
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+    ports: !override
+      - "127.0.0.1:5000:5000"
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=require
+
+  frontend:
+    profiles: [local]
