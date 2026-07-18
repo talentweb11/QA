@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:security:report": "node -e \"fs.mkdirSync('reports', { recursive: true })\" && eslint . --format json --output-file reports/eslint-security-report.json",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -29,8 +30,10 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.3.0",
+    "eslint-plugin-no-unsanitized": "^4.1.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "eslint-plugin-security": "^4.0.1",
     "globals": "^17.6.0",
     "jsdom": "^29.1.1",
     "typescript": "~6.0.2",

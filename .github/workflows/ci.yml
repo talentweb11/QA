@@ -74,6 +74,18 @@ jobs:
         run: npm install
         working-directory: frontend
 
+      - name: Generate ESLint security report
+        run: npm run lint:security:report
+        working-directory: frontend
+
+      - name: Upload ESLint security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-security-report
+          path: frontend/reports/eslint-security-report.json
+          if-no-files-found: ignore
+
       - name: Lint
         run: npm run lint
         working-directory: frontend
